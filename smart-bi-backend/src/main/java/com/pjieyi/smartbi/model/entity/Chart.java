@@ -1,19 +1,18 @@
 package com.pjieyi.smartbi.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
- * 用户
- *
- * @TableName user
+ * 图表信息表
+ * @TableName chart
  */
-@TableName(value = "user")
+@TableName(value ="chart")
 @Data
-public class User implements Serializable {
+public class Chart implements Serializable {
     /**
      * id
      */
@@ -21,46 +20,39 @@ public class User implements Serializable {
     private Long id;
 
     /**
-     * 用户昵称
+     * 图表名称
      */
-    private String userName;
+    private String name;
 
     /**
-     * 账号
+     * 分析目标
      */
-    private String userAccount;
+    private String goal;
 
     /**
-     * 手机号
+     * 图表数据
      */
-    private String phone;
+    private String chartData;
 
     /**
-     * 用户头像
+     * 图表类型
      */
-    private String userAvatar;
+    private String chartType;
 
     /**
-     * 用户邮箱
+     * 生成的图表数据
      */
-    private String email;
-
-
+    private String genChart;
 
     /**
-     * 性别
+     * 生成的分析结论
      */
-    private Integer gender;
+    private String genResult;
 
     /**
-     * 用户角色: user, admin
+     * 创建用户 id
      */
-    private String userRole;
-
-    /**
-     * 密码
-     */
-    private String userPassword;
+    private Long userId;
 
     /**
      * 创建时间

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/user")
-@Api(tags = "用户相关接口")
+//@Api(tags = "用户相关接口")前端通过openapi生成代码时 生成出来的文件名为拼音
 public class UserController {
 
     @Resource

@@ -16,7 +16,7 @@ import {Helmet, history, Link} from '@umijs/max';
 import {message, Space, Divider} from 'antd';
 import { createStyles } from 'antd-style';
 import Settings from '../../../../config/defaultSettings';
-import {userRegisterUsingPost} from "@/services/yiapi-backend/userController";
+import {userRegisterUsingPost} from "@/services/smart-bi-backend/userController";
 import {FormattedMessage} from "react-intl";
 import {getVerifyCode} from "@/services/ant-design-pro/api";
 import React from "react";
@@ -112,7 +112,7 @@ const Login: React.FC = () => {
           }}
           logo={<img alt="logo" src="/ArtStation.ico" />}
           title="智能BI平台"
-          subTitle={'一站式管理接口'}
+          subTitle={'实现数据分析的降本增效'}
           initialValues={{
             autoLogin: true,
           }}

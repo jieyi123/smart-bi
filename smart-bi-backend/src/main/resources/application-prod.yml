@@ -2,6 +2,6 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yi_api
+    url: jdbc:mysql://localhost:3306/smart_bi
     username: root
     password: 123456

@@ -3,6 +3,7 @@ package com.pjieyi.smartbi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pjieyi.smartbi.common.ErrorCode;
+import com.pjieyi.smartbi.config.RedisConfig;
 import com.pjieyi.smartbi.mapper.UserMapper;
 import com.pjieyi.smartbi.model.dto.response.CaptureResponse;
 import com.pjieyi.smartbi.model.entity.User;
@@ -11,6 +12,7 @@ import com.pjieyi.smartbi.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -19,9 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import static com.pjieyi.smartbi.constant.UserConstant.ADMIN_ROLE;
-import static com.pjieyi.smartbi.constant.UserConstant.USER_LOGIN_STATE;
+import static com.pjieyi.smartbi.constant.UserConstant.*;
 import static com.pjieyi.smartbi.utils.AliyunIdentifyCode.getParams;
 import static com.pjieyi.smartbi.utils.SMSUtils.sendMessage;
 import static com.pjieyi.smartbi.utils.ValidateCodeUtils.generateValidateCode;
@@ -40,8 +42,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
-    private  static  String code="1231";
+
 
     /**
      * 盐值，混淆密码
@@ -65,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
         //校验验证码
-        if (!verifyCode.equals(code)){
+        if (!verifyCode.equals(redisTemplate.opsForValue().get(USER_LOGIN_CAPTCHA+phone))){
             throw new BusinessException(ErrorCode.CODE_ERROR,"验证码错误");
         }
         synchronized (userAccount.intern()) {
@@ -179,7 +183,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号不合法");
         }
         //验证码校验
-        if (!captcha.equals(code)){
+        if (!captcha.equals(redisTemplate.opsForValue().get(USER_LOGIN_CAPTCHA+phone))){
             throw new BusinessException(ErrorCode.CODE_ERROR);
         }
 
@@ -204,7 +208,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return 验证码
      */
     public String getCaptcha(String phone){
-        code=generateValidateCode(6).toString();
+        String code=generateValidateCode(6).toString();
+        redisTemplate.opsForValue().set(USER_LOGIN_CAPTCHA+phone,code,2, TimeUnit.MINUTES);
         sendMessage("originai","SMS_464995252",phone,code);
         log.info("验证码："+code);
         return code;
@@ -233,11 +238,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!userPassword.equals(checkPassword)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"两次密码不一致");
         }
-        if (phone.length() < 11 || phone.length() > 11) {
+        if (phone.length() != 11) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号不合法");
         }
         //校验验证码
-        if(!verifyCode.equals(code)){
+        if(!verifyCode.equals(redisTemplate.opsForValue().get(USER_LOGIN_CAPTCHA+phone))){
             throw new BusinessException(ErrorCode.CODE_ERROR);
         }
         //数据库验证

@@ -130,7 +130,7 @@ export default defineConfig({
     // {
     //   requestLibPath: "import { request } from '@umijs/max'",
     //   schemaPath: 'http://localhost:7529/api/v3/api-docs',
-    //   projectName: 'yiapi-backend',
+    //   projectName: 'smart-bi-backend',
     // },
   ],
   mfsu: {

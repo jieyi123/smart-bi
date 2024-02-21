@@ -4,7 +4,7 @@ import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { Link, history } from '@umijs/max';
 import { requestConfig } from './requestConfig';
-import {getLoginUserUsingGet} from "@/services/yiapi-backend/userController";
+import {getLoginUserUsingGet} from "@/services/smart-bi-backend/userController";
 import defaultSettings from "../config/defaultSettings";
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';

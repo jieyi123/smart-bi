@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import {Form, List, Modal, Input, message} from 'antd';
 import {history, useModel} from "@@/exports";
-import {updateUserPasswordPost, userLogoutUsingPost} from "@/services/yiapi-backend/userController";
+import {updateUserPasswordPost, userLogoutUsingPost} from "@/services/smart-bi-backend/userController";
 import {stringify} from "querystring";
 import {waitTime} from "@/pages/Admin/UserManager";
 

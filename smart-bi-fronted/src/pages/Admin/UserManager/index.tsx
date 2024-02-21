@@ -16,7 +16,7 @@ import {
   deleteUserUsingPost,
   listUserByPageUsingGet,
   updateUserUsingPost
-} from "@/services/yiapi-backend/userController";
+} from "@/services/smart-bi-backend/userController";
 import {FormValueType} from "@/pages/Admin/UserManager/components/CreateForm";
 import CreateForm from "@/pages/Admin/UserManager/components/CreateForm";
 

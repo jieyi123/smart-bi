@@ -13,6 +13,11 @@ public interface UserConstant {
     String USER_LOGIN_STATE = "userLoginState";
 
     /**
+     * 验证码
+     */
+    String USER_LOGIN_CAPTCHA  ="user:login:captcha:";
+
+    /**
      * 系统用户 id（虚拟用户）
      */
     long SYSTEM_USER_ID = 0;

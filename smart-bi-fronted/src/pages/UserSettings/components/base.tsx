@@ -9,9 +9,9 @@ import ProForm, {
 import { useRequest } from '@umijs/max';
 
 import styles from './BaseView.less';
-import {getLoginUserUsingGet, getUserByIdUsingGet, updateUserUsingPost} from "@/services/yiapi-backend/userController";
+import {getLoginUserUsingGet, getUserByIdUsingGet, updateUserUsingPost} from "@/services/smart-bi-backend/userController";
 import {useModel} from "@@/exports";
-import {uploadUsingPost} from "@/services/yiapi-backend/fileUploadController";
+import {uploadUsingPost} from "@/services/smart-bi-backend/fileUploadController";
 
 
 // 头像组件 方便以后独立，增加裁剪之类的功能
