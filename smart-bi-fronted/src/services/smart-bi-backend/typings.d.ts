@@ -5,12 +5,29 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseBiResponse = {
+    code?: number;
+    data?: BiResponse;
+    message?: string;
+  };
+
   type BaseResponseboolean = {
     code?: number;
     data?: boolean;
     message?: string;
   };
 
+  type BaseResponseChart = {
+    code?: number;
+    data?: Chart;
+    message?: string;
+  };
+
+  type BaseResponseListChart = {
+    code?: number;
+    data?: Chart[];
+    message?: string;
+  };
 
   type BaseResponseListUserVO = {
     code?: number;
@@ -24,16 +41,15 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponsePageChart = {
+    code?: number;
+    data?: PageChart;
+    message?: string;
+  };
 
   type BaseResponsePageUserVO = {
     code?: number;
     data?: PageUserVO;
-    message?: string;
-  };
-
-  type BaseResponsePost = {
-    code?: number;
-    data?: Post;
     message?: string;
   };
 
@@ -55,58 +71,94 @@ declare namespace API {
     message?: string;
   };
 
+  type BiResponse = {
+    chartId?: number;
+    genChart?: string;
+    genResult?: string;
+  };
+
+  type Chart = {
+    chartData?: string;
+    chartType?: string;
+    createTime?: string;
+    genChart?: string;
+    genResult?: string;
+    goal?: string;
+    id?: number;
+    isDelete?: number;
+    name?: string;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type ChartAddRequest = {
+    chartData?: string;
+    chartType?: string;
+    goal?: string;
+    name?: string;
+  };
+
+  type ChartQueryRequest = {
+    chartData?: string;
+    chartType?: string;
+    current?: number;
+    genChart?: string;
+    genResult?: string;
+    goal?: string;
+    id?: number;
+    name?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    userId?: number;
+  };
+
+  type ChartUpdateRequest = {
+    chartData?: string;
+    chartType?: string;
+    genChart?: string;
+    genResult?: string;
+    goal?: string;
+    id?: number;
+    name?: string;
+  };
+
   type DeleteRequest = {
     id?: number;
   };
-
-  type UpdatePassword={
-    id:number;
-    oldPassword?:string;
-    newPassword?:string;
-    confirmPassword?:string;
-  }
 
   type getCaptchaUsingGETParams = {
     /** phone */
     phone: string;
   };
 
+  type getChartByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
 
+  type getChartUsingPOSTParams = {
+    chartType?: string;
+    goal?: string;
+    name?: string;
+  };
 
   type getUserByIdUsingGETParams = {
     /** id */
     id?: number;
   };
 
-  type InterfaceInfo = {
-    createTime?: string;
-    description?: string;
-    id?: number;
-    isDelete?: number;
-    method?: string;
-    name?: string;
-    requestHeader?: string;
-    responseHeader?: string;
-    status?: number;
-    updateTime?: string;
-    url?: string;
-    userId?: number;
-  };
-
-
-
-
-
   type listUserByPageUsingGETParams = {
-    createTime?: Date;
     current?: number;
     email?: string;
+    endTime?: string;
     gender?: number;
     id?: number;
     pageSize?: number;
     phone?: string;
     sortField?: string;
     sortOrder?: string;
+    startTime?: string;
     updateTime?: string;
     userAccount?: string;
     userAvatar?: string;
@@ -115,15 +167,16 @@ declare namespace API {
   };
 
   type listUserUsingGETParams = {
-    createTime?: Date;
     current?: number;
     email?: string;
+    endTime?: string;
     gender?: number;
     id?: number;
     pageSize?: number;
     phone?: string;
     sortField?: string;
     sortOrder?: string;
+    startTime?: string;
     updateTime?: string;
     userAccount?: string;
     userAvatar?: string;
@@ -214,7 +267,18 @@ declare namespace API {
     column?: string;
   };
 
-
+  type PageChart = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Chart[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
 
   type PageUserVO = {
     countId?: string;
@@ -229,7 +293,6 @@ declare namespace API {
     total?: number;
   };
 
-
   type RetrievePasswordRequest = {
     /** 确认密码 */
     checkPassword?: string;
@@ -241,8 +304,12 @@ declare namespace API {
     verifyCode?: string;
   };
 
+  type uploadFileUsingPOSTParams = {
+    biz?: string;
+  };
+
   type User = {
-    createTime?: Date;
+    createTime?: string;
     email?: string;
     gender?: number;
     id?: number;
@@ -275,6 +342,13 @@ declare namespace API {
     userPassword?: string;
   };
 
+  type UserPasswordRequest = {
+    confirmPassword?: string;
+    id?: number;
+    newPassword?: string;
+    oldPassword?: string;
+  };
+
   type UserRegisterRequest = {
     /** 确认密码 */
     checkPassword?: string;
@@ -301,12 +375,12 @@ declare namespace API {
   };
 
   type UserVO = {
-    createTime?: Date;
+    createTime?: string;
     email?: string;
     gender?: number;
     id?: number;
     phone?: string;
-    updateTime?: date;
+    updateTime?: string;
     userAccount?: string;
     userAvatar?: string;
     userName?: string;

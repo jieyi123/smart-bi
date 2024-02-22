@@ -2,13 +2,12 @@ package com.pjieyi.smartbi.service;
 
 import com.pjieyi.smartbi.exception.BusinessException;
 import com.pjieyi.smartbi.model.entity.User;
+import com.pjieyi.smartbi.utils.SMSUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-
-import static com.pjieyi.smartbi.utils.SMSUtils.sendMessage;
 
 /**
  * 用户服务测试
@@ -63,9 +62,11 @@ class UserServiceTest {
         }
     }
 
+    @Resource
+    private SMSUtils smsUtils;
     @Test
     void testAliyunSMS(){
-        sendMessage("originai","SMS_464995252","","888888");
+        smsUtils.sendMessage("originai","SMS_464995252","","888888");
     }
 
 

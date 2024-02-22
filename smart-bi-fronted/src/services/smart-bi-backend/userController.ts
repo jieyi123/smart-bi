@@ -135,12 +135,12 @@ export async function userRegisterUsingPost(
   });
 }
 
-/** 重置密码 POST /api/user/retrievePassword */
+/** retrievePassword POST /api/user/retrievePassword */
 export async function retrievePasswordUsingPost(
   body: API.RetrievePasswordRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponselong>('/api/user/retrievePassword', {
+  return request<API.BaseResponse>('/api/user/retrievePassword', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,12 +165,12 @@ export async function updateUserUsingPost(
   });
 }
 
-/** 修改密码 POST /api/user/update */
-export async function updateUserPasswordPost(
-  body: API.UpdatePassword,
+/** updatePassword POST /api/user/updatePassword */
+export async function updatePasswordUsingPost(
+  body: API.UserPasswordRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponselong>('/api/user/updatePassword', {
+  return request<API.BaseResponse>('/api/user/updatePassword', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -179,7 +179,6 @@ export async function updateUserPasswordPost(
     ...(options || {}),
   });
 }
-
 
 /** verifyCapture GET /api/user/verifyCapture */
 export async function verifyCaptureUsingGet(

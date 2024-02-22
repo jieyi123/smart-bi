@@ -1,9 +1,12 @@
 package com.pjieyi.smartbi.utils;
 
+import lombok.Data;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.json.JSONObject;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -14,14 +17,16 @@ import java.util.Map;
  * @author pjieyi
  * @description 图形验证
  */
+@Component
+@Data
+@ConfigurationProperties("aliyun.captcha")
 public class AliyunIdentifyCode {
     //1.验证参数信息
-    private static final String captchaId=""; //appId
-    private static final String captchaKey=""; //appKey
-    private static final String domain="https://captcha.alicaptcha.com";
+    private  String captchaId; //appId
+    private  String captchaKey; //appKey
+    private  String domain;
 
-
-    public static JSONObject getParams(Map<String,String> getParams){
+    public  JSONObject getParams(Map<String,String> getParams){
 
         // 2.获取用户验证后前端传过来的验证流水号等参数
         // 2.get the verification parameters passed from the front end after verification

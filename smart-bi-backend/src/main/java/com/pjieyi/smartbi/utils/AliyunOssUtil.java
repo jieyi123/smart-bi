@@ -19,7 +19,7 @@ import java.io.InputStream;
 public class AliyunOssUtil {
 
     @Value("${aliyun.oss.accessKeySecret}")
-    private    String accessKeySecret;
+    private   String accessKeySecret;
 
     @Value("${aliyun.oss.accessKeyId}")
     private  String accessKeyId;

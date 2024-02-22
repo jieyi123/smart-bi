@@ -41,15 +41,15 @@ public class FileUploadController {
     private UserService userService;
 
 
-    //@PostMapping("/upload")
-    //public BaseResponse<String> upload(MultipartFile file) throws IOException {
-    //    //获取原始文件名
-    //    String filename=file.getOriginalFilename();
-    //    filename= UUID.randomUUID()+filename.substring(filename.lastIndexOf("."));
-    //    String url=aliyunOssUtil.upload(filename,file.getInputStream());
-    //    //file.transferTo(new File("C:\\Users\\pjy17\\Desktop\\img\\"+filename));
-    //    return ResultUtils.success(url);
-    //}
+    @PostMapping("/upload")
+    public BaseResponse<String> upload(MultipartFile file) throws IOException {
+        //获取原始文件名
+        String filename=file.getOriginalFilename();
+        filename= UUID.randomUUID()+filename.substring(filename.lastIndexOf("."));
+        String url=aliyunOssUtil.upload(filename,file.getInputStream());
+        //file.transferTo(new File("C:\\Users\\pjy17\\Desktop\\img\\"+filename));
+        return ResultUtils.success(url);
+    }
 
     /**
      * 文件上传
@@ -58,7 +58,7 @@ public class FileUploadController {
      * @param request
      * @return
      */
-    @PostMapping("/upload")
+    @PostMapping("/uploadFile")
     public BaseResponse<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
                                            UploadFileRequest uploadFileRequest, HttpServletRequest request) {
         String biz = uploadFileRequest.getBiz();

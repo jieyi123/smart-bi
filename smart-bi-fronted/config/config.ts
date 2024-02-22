@@ -127,11 +127,11 @@ export default defineConfig({
    * @doc https://pro.ant.design/zh-cn/docs/openapi/
    */
   openAPI: [
-    // {
-    //   requestLibPath: "import { request } from '@umijs/max'",
-    //   schemaPath: 'http://localhost:7529/api/v3/api-docs',
-    //   projectName: 'smart-bi-backend',
-    // },
+    {
+      requestLibPath: "import { request } from '@umijs/max'",
+      schemaPath: 'http://localhost:7529/api/v3/api-docs',
+      projectName: 'smart-bi-backend',
+    },
   ],
   mfsu: {
     strategy: 'normal',

@@ -1,14 +1,17 @@
 package com.pjieyi.smartbi.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pjieyi.smartbi.annotation.AuthCheck;
 import com.pjieyi.smartbi.common.BaseResponse;
 import com.pjieyi.smartbi.common.DeleteRequest;
 import com.pjieyi.smartbi.common.ErrorCode;
 import com.pjieyi.smartbi.common.ResultUtils;
 import com.pjieyi.smartbi.constant.FileConstant;
+import com.pjieyi.smartbi.constant.UserConstant;
 import com.pjieyi.smartbi.exception.BusinessException;
 import com.pjieyi.smartbi.exception.ThrowUtils;
 import com.pjieyi.smartbi.model.dto.chart.ChartAddRequest;
@@ -19,6 +22,7 @@ import com.pjieyi.smartbi.model.entity.Chart;
 import com.pjieyi.smartbi.model.entity.User;
 import com.pjieyi.smartbi.model.enums.FileUploadBizEnum;
 import com.pjieyi.smartbi.model.file.UploadFileRequest;
+import com.pjieyi.smartbi.model.vo.BiResponse;
 import com.pjieyi.smartbi.service.ChartService;
 import com.pjieyi.smartbi.service.UserService;
 import com.pjieyi.smartbi.utils.AliyunOssUtil;
@@ -27,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,8 +55,6 @@ public class ChartController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private AliyunOssUtil aliyunOssUtil;
     
 
     // region 增删改查
@@ -98,6 +101,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/update")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateChart(@RequestBody ChartUpdateRequest chartUpdateRequest, HttpServletRequest request) {
         if (chartUpdateRequest == null || chartUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -129,8 +133,8 @@ public class ChartController {
      * @param request
      * @return
      */
-    @GetMapping("/list")
-    public BaseResponse<List<Chart>> listChart(ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
+    @PostMapping("/list")
+    public BaseResponse<List<Chart>> listChart(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
 
         Chart chartQuery = new Chart();
         if (chartQueryRequest != null) {
@@ -153,8 +157,8 @@ public class ChartController {
      * @param request
      * @return
      */
-    @GetMapping("/list/page")
-    public BaseResponse<Page<Chart>> listChartByPage(ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
+    @PostMapping("/list/page")
+    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
         long current = 1;
         long size = 10;
         Chart chartQuery = new Chart();
@@ -213,52 +217,25 @@ public class ChartController {
     // endregion
 
     /**
-     * 文件上传 智能分析
+     * 智能分析
      * @param multipartFile
      * @param genChartByAiRequest
      * @param request
      * @return
      */
-    @PostMapping("/upload")
-    public BaseResponse<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
+    @PostMapping("/gen")
+    public BaseResponse<BiResponse> getChart(@RequestPart("file") MultipartFile multipartFile,
                                            GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
-        String name = genChartByAiRequest.getName();
-        String goal = genChartByAiRequest.getGoal();
-        String chartType = genChartByAiRequest.getChartType();
-        ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
-        ThrowUtils.throwIf(StringUtils.isNotBlank(name)&&name.length()>100,ErrorCode.PARAMS_ERROR,"名称过长");
-        StringBuilder builder=new StringBuilder("你是一个数据分析师，接下来我会给你我的分析目标和原始数据，请告诉我分析结论。");
-        builder.append("\n");
-        builder.append("分析目标:").append(goal+"\n");
-        String data = ExcelUtils.excelToCsv(multipartFile);
-        builder.append("数据:\n"+data);
-        System.out.println(builder.toString());
-        return ResultUtils.success(builder.toString());
-        //User loginUser = userService.getLoginUser(request);
-        //// 文件目录：根据业务、用户来划分
-        //String uuid = RandomStringUtils.randomAlphanumeric(8);
-        //String filename = uuid + "-" + multipartFile.getOriginalFilename();
-        //String filepath = String.format("/%s/%s/%s", "data_analysis", loginUser.getId(), filename);
-        //File file = null;
-        //try {
-        //    // 上传文件
-        //    file = File.createTempFile(filepath, null);
-        //    multipartFile.transferTo(file);
-        //    //aliyunOssUtil.upload(filepath,multipartFile.getInputStream());
-        //    // 返回可访问地址
-        //    return ResultUtils.success(ExcelUtils.excelToCsv(multipartFile));
-        //} catch (Exception e) {
-        //    log.error("file upload error, filepath = " + filepath, e);
-        //    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
-        //} finally {
-        //    if (file != null) {
-        //        // 删除临时文件
-        //        boolean delete = file.delete();
-        //        if (!delete) {
-        //            log.error("file delete error, filepath = {}", filepath);
-        //        }
-        //    }
-        //}
+
+        if (multipartFile.isEmpty()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (genChartByAiRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        BiResponse result=chartService.genChart(multipartFile,genChartByAiRequest,loginUser);
+        return ResultUtils.success(result);
     }
 
 }

@@ -9,6 +9,8 @@ import com.pjieyi.smartbi.model.dto.response.CaptureResponse;
 import com.pjieyi.smartbi.model.entity.User;
 import com.pjieyi.smartbi.service.UserService;
 import com.pjieyi.smartbi.exception.BusinessException;
+import com.pjieyi.smartbi.utils.AliyunIdentifyCode;
+import com.pjieyi.smartbi.utils.SMSUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -24,8 +26,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.pjieyi.smartbi.constant.UserConstant.*;
-import static com.pjieyi.smartbi.utils.AliyunIdentifyCode.getParams;
-import static com.pjieyi.smartbi.utils.SMSUtils.sendMessage;
 import static com.pjieyi.smartbi.utils.ValidateCodeUtils.generateValidateCode;
 
 
@@ -45,6 +45,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private RedisTemplate<String,Object> redisTemplate;
 
+    @Resource
+    private SMSUtils smsUtils;
+
+    @Resource
+    private AliyunIdentifyCode aliyunIdentifyCode;
 
 
     /**
@@ -109,7 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public CaptureResponse identifyCapture(Map<String, String> getParams) {
-        JSONObject jsonObject = getParams(getParams);
+        JSONObject jsonObject = aliyunIdentifyCode.getParams(getParams);
         CaptureResponse captureResponse=new CaptureResponse();
         try {
             captureResponse.setResult(jsonObject.getString("result"));
@@ -210,7 +215,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public String getCaptcha(String phone){
         String code=generateValidateCode(6).toString();
         redisTemplate.opsForValue().set(USER_LOGIN_CAPTCHA+phone,code,2, TimeUnit.MINUTES);
-        sendMessage("originai","SMS_464995252",phone,code);
+        //阿里云发送短信
+        smsUtils.sendMessage("originai","SMS_464995252",phone,code);
         log.info("验证码："+code);
         return code;
     }
