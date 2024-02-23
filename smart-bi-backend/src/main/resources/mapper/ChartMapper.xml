@@ -10,6 +10,8 @@
             <result property="goal" column="goal" jdbcType="VARCHAR"/>
             <result property="chartData" column="chartData" jdbcType="VARCHAR"/>
             <result property="chartType" column="chartType" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="execMessage" column="execMessage" jdbcType="VARCHAR"/>
             <result property="genChart" column="genChart" jdbcType="VARCHAR"/>
             <result property="genResult" column="genResult" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
@@ -20,8 +22,17 @@
 
     <sql id="Base_Column_List">
         id,name,goal,
-        chartData,chartType,genChart,
-        genResult,userId,createTime,
-        updateTime,isDelete
+        chartData,chartType,status,
+        execMessage,genChart,genResult,
+        userId,createTime,updateTime,
+        isDelete
     </sql>
+
+    <!--需要注意SQL注入-->
+    <!--可以在程序里面去做校验。只要保证这个SQL是通过你的后端生成的，-->
+    <!--在生成的过程中做了校验，就不会有这种漏洞的风险。 -->
+    <select id="queryChartData" resultType="map" parameterType="string">
+        ${querySql}
+    </select>
+
 </mapper>

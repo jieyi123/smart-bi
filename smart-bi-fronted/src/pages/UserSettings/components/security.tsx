@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import {Form, List, Modal, Input, message} from 'antd';
 import {history, useModel} from "@@/exports";
-import {updateUserPasswordPost, userLogoutUsingPost} from "@/services/smart-bi-backend/userController";
+import {updatePasswordUsingPost, userLogoutUsingPost} from "@/services/smart-bi-backend/userController";
 import {stringify} from "querystring";
 import {waitTime} from "@/pages/Admin/UserManager";
 
@@ -42,7 +42,7 @@ const ModifyPasswordModal = ({ visible, onCancel, onOk }) => {
   const handleOk = () => {
     form.validateFields().then((values) =>  {
         // 处理密码修改逻辑
-     updateUserPasswordPost({
+     updatePasswordUsingPost({
         id:loginUser?.id,
         ...values
       }).then((response)=>{

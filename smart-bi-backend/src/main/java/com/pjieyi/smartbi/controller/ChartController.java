@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/chart")
 @Slf4j
+@Profile({"dev","test"}) //只允许dev和test环境可以使用
 public class ChartController {
 
     @Resource
@@ -159,58 +161,11 @@ public class ChartController {
      */
     @PostMapping("/list/page")
     public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
-        long current = 1;
-        long size = 10;
-        Chart chartQuery = new Chart();
-        //if (chartQueryRequest != null) {
-        //    BeanUtils.copyProperties(chartQueryRequest, chartQuery);
-        //    current = chartQueryRequest.getCurrent();
-        //    size = chartQueryRequest.getPageSize();
-        //}
-
+        String name = chartQueryRequest.getName();
         LambdaQueryWrapper<Chart> queryWrapper=new LambdaQueryWrapper<>();
-        //String chartAccount = chartQuery.getChartAccount();
-        //String chartRole = chartQuery.getChartRole();
-        //String chartName = chartQuery.getChartName();
-        //String phone = chartQuery.getPhone();
-        //String email = chartQuery.getEmail();
-        //String startTime = chartQueryRequest.getStartTime();
-        //String endTime = chartQueryRequest.getEndTime();
-        //Integer gender = chartQuery.getGender();
-        ////模糊查询
-        //if (StringUtils.isNotEmpty(chartAccount)){
-        //    queryWrapper.like(Chart::getChartAccount,chartAccount);
-        //}
-        //if (StringUtils.isNotEmpty(chartName)){
-        //    queryWrapper.like(Chart::getChartName,chartName);
-        //}
-        //if (StringUtils.isNotEmpty(phone)){
-        //    queryWrapper.like(Chart::getPhone,phone);
-        //}
-        //if (StringUtils.isNotEmpty(email)){
-        //    queryWrapper.like(Chart::getEmail,email);
-        //}
-        //if(gender != null){
-        //    queryWrapper.like(Chart::getGender,gender);
-        //}
-        //if (StringUtils.isNotEmpty(chartRole)){
-        //    queryWrapper.like(Chart::getChartRole,chartRole);
-        //}
-        //if (StringUtils.isNotEmpty(startTime) && StringUtils.isNoneEmpty(endTime)){
-        //    //大于等于
-        //    queryWrapper.ge(Chart::getCreateTime,startTime);
-        //    //小于等于
-        //    queryWrapper.le(Chart::getCreateTime,endTime);
-        //}
-        //queryWrapper.orderByDesc(Chart::getUpdateTime);
-        Page<Chart> chartPage = chartService.page(new Page<>(current, size), queryWrapper);
-        //Page<ChartVO> chartVOPage = new PageDTO<>(chartPage.getCurrent(), chartPage.getSize(), chartPage.getTotal());
-        //List<ChartVO> chartVOList = chartPage.getRecords().stream().map(chart -> {
-        //    ChartVO chartVO = new ChartVO();
-        //    BeanUtils.copyProperties(chart, chartVO);
-        //    return chartVO;
-        //}).collect(Collectors.toList());
-        //chartVOPage.setRecords(chartVOList);
+        queryWrapper.like(StringUtils.isNotBlank(name),Chart::getName,name);
+        queryWrapper.orderByDesc(Chart::getUpdateTime);
+        Page<Chart> chartPage = chartService.page(new Page<>(chartQueryRequest.getCurrent(), chartQueryRequest.getPageSize()), queryWrapper);
         return ResultUtils.success(chartPage);
     }
 

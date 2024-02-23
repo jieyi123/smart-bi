@@ -22,4 +22,13 @@ public interface ChartService extends IService<Chart> {
      * @return
      */
     BiResponse genChart(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, User loginUser);
+
+    /**
+     * 利用AI生成数据 异步调用
+     * @param multipartFile
+     * @param genChartByAiRequest
+     * @param loginUser
+     * @return
+     */
+    BiResponse genChartAsync(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, User loginUser);
 }
