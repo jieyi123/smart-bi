@@ -1,7 +1,5 @@
 package com.pjieyi.smartbi.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,36 +8,26 @@ import com.pjieyi.smartbi.common.BaseResponse;
 import com.pjieyi.smartbi.common.DeleteRequest;
 import com.pjieyi.smartbi.common.ErrorCode;
 import com.pjieyi.smartbi.common.ResultUtils;
-import com.pjieyi.smartbi.constant.FileConstant;
 import com.pjieyi.smartbi.constant.UserConstant;
 import com.pjieyi.smartbi.exception.BusinessException;
-import com.pjieyi.smartbi.exception.ThrowUtils;
 import com.pjieyi.smartbi.model.dto.chart.ChartAddRequest;
 import com.pjieyi.smartbi.model.dto.chart.ChartQueryRequest;
 import com.pjieyi.smartbi.model.dto.chart.ChartUpdateRequest;
 import com.pjieyi.smartbi.model.dto.chart.GenChartByAiRequest;
 import com.pjieyi.smartbi.model.entity.Chart;
 import com.pjieyi.smartbi.model.entity.User;
-import com.pjieyi.smartbi.model.enums.FileUploadBizEnum;
-import com.pjieyi.smartbi.model.file.UploadFileRequest;
 import com.pjieyi.smartbi.model.vo.BiResponse;
 import com.pjieyi.smartbi.service.ChartService;
 import com.pjieyi.smartbi.service.UserService;
-import com.pjieyi.smartbi.utils.AliyunOssUtil;
-import com.pjieyi.smartbi.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,7 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/chart")
 @Slf4j
-@Profile({"dev","test"}) //只允许dev和test环境可以使用
+//@Profile({"dev","test"}) //只允许dev和test环境可以使用
 public class ChartController {
 
     @Resource
@@ -161,8 +149,14 @@ public class ChartController {
      */
     @PostMapping("/list/page")
     public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+
         String name = chartQueryRequest.getName();
         LambdaQueryWrapper<Chart> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(Chart::getUserId,loginUser.getId());
         queryWrapper.like(StringUtils.isNotBlank(name),Chart::getName,name);
         queryWrapper.orderByDesc(Chart::getUpdateTime);
         Page<Chart> chartPage = chartService.page(new Page<>(chartQueryRequest.getCurrent(), chartQueryRequest.getPageSize()), queryWrapper);
@@ -172,7 +166,7 @@ public class ChartController {
     // endregion
 
     /**
-     * 智能分析
+     * 智能分析 (同步)
      * @param multipartFile
      * @param genChartByAiRequest
      * @param request
@@ -192,5 +186,28 @@ public class ChartController {
         BiResponse result=chartService.genChart(multipartFile,genChartByAiRequest,loginUser);
         return ResultUtils.success(result);
     }
+    /**
+     * 为了方便演示 将同步和异步作为两个接口
+     * 智能分析 (异步)
+     * @param multipartFile
+     * @param genChartByAiRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/genAsync")
+    public BaseResponse<BiResponse> getChartAsync(@RequestPart("file") MultipartFile multipartFile,
+                                             GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
+
+        if (multipartFile.isEmpty()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (genChartByAiRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        BiResponse result=chartService.genChartAsync(multipartFile,genChartByAiRequest,loginUser);
+        return ResultUtils.success(result);
+    }
+
 
 }

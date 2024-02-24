@@ -130,14 +130,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         String goal = genChartByAiRequest.getGoal();
         String chartType = genChartByAiRequest.getChartType();
         ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR,"目标为空");
-        ThrowUtils.throwIf(StringUtils.isNotBlank(name)&&name.length()>100,ErrorCode.PARAMS_ERROR,"名称过长");
-        chart.setName(name);
-        chart.setGoal(goal);
-        chart.setUserId(loginUser.getId());
-        //todo 改为枚举
-        chart.setStatus("wait");
-        boolean saveResult = this.save(chart);
-        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
+        ThrowUtils.throwIf(StringUtils.isBlank(name), ErrorCode.PARAMS_ERROR,"名称为空");
+        ThrowUtils.throwIf(name.length()>100,ErrorCode.PARAMS_ERROR,"名称过长");
+
         //字符串拼接
         StringBuilder builder=new StringBuilder();
         builder.append("分析需求:").append(goal+"\n");
@@ -149,6 +144,16 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         validFile(multipartFile);
         //解析文件
         String data = ExcelUtils.excelToCsv(multipartFile);
+
+        chart.setName(name);
+        chart.setGoal(goal);
+        chart.setChartData(data);
+        chart.setUserId(loginUser.getId());
+        //todo 生成图表状态改为枚举
+        chart.setStatus("wait");
+        boolean saveResult = this.save(chart);
+        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
+
         builder.append("原始数据:\n"+data);
         String requestData = builder.toString();
 
@@ -157,8 +162,8 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         Long chartId = chart.getId();
         try {
             CompletableFuture.runAsync(()->{
-                // 先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；
-                // 执行失败后，状态修改为 “失败”，记录任务失败信息。(为了防止同一个任务被多次执行)
+                //先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；
+                //执行失败后，状态修改为 “失败”，记录任务失败信息。(为了防止同一个任务被多次执行)
                 Chart runingChart=new Chart();
                 runingChart.setId(chartId);
                 runingChart.setStatus("running");
@@ -173,7 +178,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
                 String[] splits = responseData.split("【【【【【");
                 //只有三部分
                 if (splits.length<3){
-                    throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI生成错误");
+                    handleChartUpdateError(chartId,"AI生成错误");
                 }
                 //返回数据拼接
                 String genChart = splits[1].trim();
