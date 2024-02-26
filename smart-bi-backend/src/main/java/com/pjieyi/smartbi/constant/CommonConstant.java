@@ -16,4 +16,9 @@ public interface CommonConstant {
      * 降序
      */
     String SORT_ORDER_DESC = " descend";
+
+    /**
+     * AI模型id
+     */
+    Long BI_MODEL_ID=1756296792985034754L;
 }

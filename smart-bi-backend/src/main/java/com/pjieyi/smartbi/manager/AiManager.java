@@ -37,6 +37,9 @@ public class AiManager {
         if (response==null){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"AI响应错误");
         }
+        if (response.getData()==null){
+            return "";
+        }
         return response.getData().getContent();
     }
 }

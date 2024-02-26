@@ -17,7 +17,7 @@ class AiManagerTest {
     @Resource
     private AiManager aiManager;
     @Test
-    void doChart() {
+    void doChartBi() {
         String message="分析需求：\n" +
                 "分析网站用户的增长情况\n" +
                 "原始数据：\n" +
@@ -29,6 +29,14 @@ class AiManagerTest {
                 "5号,14\n" +
                 "6号,20";
         Long modelId=1756296792985034754L;
+        String res = aiManager.doChart(message, modelId);
+        System.out.println(res);
+    }
+    @Test
+    void doChart(){
+        String message="你能干什么";
+        //通用模型
+        Long modelId=1654785040361893889L;
         String res = aiManager.doChart(message, modelId);
         System.out.println(res);
     }

@@ -188,7 +188,7 @@ public class ChartController {
     }
     /**
      * 为了方便演示 将同步和异步作为两个接口
-     * 智能分析 (异步)
+     * 智能分析 (异步) 线程池
      * @param multipartFile
      * @param genChartByAiRequest
      * @param request
@@ -206,6 +206,29 @@ public class ChartController {
         }
         User loginUser = userService.getLoginUser(request);
         BiResponse result=chartService.genChartAsync(multipartFile,genChartByAiRequest,loginUser);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 为了方便演示 将同步和异步作为两个接口
+     * 智能分析 (异步) 消息队列
+     * @param multipartFile
+     * @param genChartByAiRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/genAsyncMq")
+    public BaseResponse<BiResponse> getChartAsyncMq(@RequestPart("file") MultipartFile multipartFile,
+                                                  GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
+
+        if (multipartFile.isEmpty()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (genChartByAiRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        BiResponse result=chartService.genChartAsyncMq(multipartFile,genChartByAiRequest,loginUser);
         return ResultUtils.success(result);
     }
 
