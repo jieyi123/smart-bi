@@ -22,7 +22,6 @@ import com.pjieyi.smartbi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +79,10 @@ public class ChartController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
         boolean b = chartService.removeById(deleteRequest.getId());
         return ResultUtils.success(b);
     }
@@ -109,7 +112,7 @@ public class ChartController {
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<Chart> getChartById(int id, HttpServletRequest request) {
+    public BaseResponse<Chart> getChartById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -231,6 +234,8 @@ public class ChartController {
         BiResponse result=chartService.genChartAsyncMq(multipartFile,genChartByAiRequest,loginUser);
         return ResultUtils.success(result);
     }
+
+
 
 
 }

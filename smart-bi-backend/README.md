@@ -3,9 +3,9 @@
 ## 接口文档
 localhost:7529/api/doc.html 就能在线调试接口了，不需要前端配合啦~
 ## 第三方API
-- 在application.yml阿里云的OSS
-- utils/SMSUtils 中的sendMessage阿里云短信验证
-- utils/AliyunIdentifyCode 图形验证码
+- 在application.yml添加自己的key
+
 
 ![](doc/img.png)
+
 

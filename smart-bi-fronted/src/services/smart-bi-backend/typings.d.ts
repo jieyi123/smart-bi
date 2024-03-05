@@ -90,7 +90,7 @@ declare namespace API {
     genChart?: string;
     genResult?: string;
     goal?: string;
-    id?: number;
+    id?: string;
     isDelete?: number;
     name?: string;
     status?: string;
@@ -137,6 +137,12 @@ declare namespace API {
   type getCaptchaUsingGETParams = {
     /** phone */
     phone: string;
+  };
+
+  type getChartAsyncMqUsingPOSTParams = {
+    chartType?: string;
+    goal?: string;
+    name?: string;
   };
 
   type getChartAsyncUsingPOSTParams = {

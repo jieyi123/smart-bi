@@ -28,11 +28,33 @@
         isDelete
     </sql>
 
+
+
     <!--需要注意SQL注入-->
     <!--可以在程序里面去做校验。只要保证这个SQL是通过你的后端生成的，-->
     <!--在生成的过程中做了校验，就不会有这种漏洞的风险。 -->
     <select id="queryChartData" resultType="map" parameterType="string">
         ${querySql}
     </select>
+
+    <update id="createDataTable"  parameterType="map">
+        create table chart_${id}
+        <foreach  item="item" collection="headList" open="(" close=")" separator=",">
+            ${item} varchar(256)
+        </foreach>
+    </update>
+
+    <insert id="insertDataTable" parameterType="map">
+        insert into chart_${chartId} values
+        <foreach  item="item" collection="dataList" separator=",">
+            ${item}
+        </foreach>
+    </insert>
+
+    <update id="dropTableIfExists" parameterType="java.lang.String">
+        DROP TABLE IF EXISTS chart_${chartId}
+    </update>
+
+
 
 </mapper>

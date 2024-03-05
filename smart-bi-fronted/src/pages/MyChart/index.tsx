@@ -1,9 +1,12 @@
 import { useModel } from '@@/exports';
-import {Avatar, Card, List, message, Result} from 'antd';
+import {Avatar, Card, List, message, Result, Spin} from 'antd';
 import ReactECharts from 'echarts-for-react';
 import React, { useEffect, useState } from 'react';
 import Search from "antd/es/input/Search";
 import {listChartByPageUsingPost} from "@/services/smart-bi-backend/chartController";
+import {Link} from "@umijs/max";
+import {stringify} from "querystring";
+import {bigint} from "@umijs/utils/compiled/zod";
 
 /**
  * 我的图表页面
@@ -62,6 +65,8 @@ const MyChartPage: React.FC = () => {
     loadData();
   }, [searchParams]);
 
+
+
   return (
     <div className="my-chart-page">
       {/* 引入搜索框 */}
@@ -79,6 +84,7 @@ const MyChartPage: React.FC = () => {
             name: value,
           })
         }}/>
+
       </div>
       <List
         /*
@@ -120,16 +126,18 @@ const MyChartPage: React.FC = () => {
         loading={loading}
         dataSource={chartList}
         renderItem={(item) => (
+
           <List.Item key={item.id}>
             {/* 用卡片包裹 */}
-            <Card style={{ width: '100%' ,height: '450px'}}>
+
+            <Card style={{ width: '100%' ,height: '450px'}} title={'分析目标：' + item.goal} extra={<Link to={`/chart_info/${BigInt(item.id)}`}>More</Link>}>
               <List.Item.Meta
+                style={{marginTop: '-1px'}}
                 // 把当前登录用户信息的头像展示出来
                 //avatar={<Avatar src={loginUser && loginUser.userAvatar} />}
                 title={'图表名称: '+item.name}
                 description={item.chartType ? '图表类型: ' + item.chartType : undefined}
               />
-
               <>
                 {
                   // 当状态（item.status）为'wait'时，显示待生成的结果组件
@@ -157,8 +165,6 @@ const MyChartPage: React.FC = () => {
                 {
                   // 当状态（item.status）为'succeed'时，显示生成的图表
                   item.status === 'succeed' && <>
-                    <div style={{ marginBottom: 16 }} />
-                    <p>{'分析目标：' + item.goal}</p>
                     <div style={{ marginBottom: 16 }} />
                     <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
                   </>

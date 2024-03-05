@@ -3,7 +3,7 @@ import { Button, Card, Form, Input, message, Select, Space, Upload } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useState } from 'react';
 import {useForm} from "antd/es/form/Form";
-import {getChartAsyncUsingPost} from "@/services/smart-bi-backend/chartController";
+import {getChartAsyncMqUsingPost} from "@/services/smart-bi-backend/chartController";
 
 /**
  * 添加图表(异步)页面
@@ -34,7 +34,7 @@ const AddChartAsync: React.FC = () => {
     };
     try {
       // 需要取到上传的原始数据file→file→originFileObj(原始数据)
-      const res = await getChartAsyncUsingPost(params, {}, values.file.file.originFileObj);
+      const res = await getChartAsyncMqUsingPost(params, {}, values.file.file.originFileObj);
       // 正常情况下，如果没有返回值就分析失败，有，就分析成功
       if (!res?.data) {
         message.error('分析失败');

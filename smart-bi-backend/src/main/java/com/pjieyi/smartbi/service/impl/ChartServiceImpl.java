@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         implements ChartService {
 
+    private String data;
 
     @Resource
     private AiManager aiManager;
@@ -46,6 +49,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
 
     @Resource
     private BIMessageProducer biMessageProducer;
+
+    @Resource
+    private ChartMapper chartMapper;
 
     /**
      * AI生成数据 同步调用
@@ -216,6 +222,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         validFile(multipartFile);
         //压缩文件
         String data = ExcelUtils.excelToCsv(multipartFile);
+
         chart.setName(name);
         chart.setGoal(goal);
         chart.setChartData(data);
@@ -225,8 +232,17 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         boolean saveResult = this.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         Long chartId = chart.getId();
+        String chartIdStr = String.valueOf(chartId);
+        try {
+            //创建数据表
+            createTable(chartIdStr,data);
+            //插入数据表
+            insertTable(chartIdStr,data);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"创建图表失败");
+        }
         //发送消息
-        biMessageProducer.sendMessage(String.valueOf(chartId));
+        biMessageProducer.sendMessage(chartIdStr);
         BiResponse biResponse = new BiResponse();
         biResponse.setChartId(chartId);
         return biResponse;
@@ -263,6 +279,54 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         }
 
     }
+
+
+    public void createTable(String chartId,String data) {
+        String[] splits = data.split("\n");
+        String[] split = splits[0].split(",");
+        chartMapper.dropTableIfExists(chartId);
+        chartMapper.createDataTable(chartId, split);
+    }
+
+    /**
+     * 批量插入数据csv
+     * @param data
+     * @return
+     */
+    public Integer insertTable(String chartId,String data) {
+        String[] splits = data.split("\n");
+        List<String> dataList = new ArrayList<>();
+        for (int i = 1; i < splits.length; i++) {
+            StringBuilder builder = new StringBuilder("(");
+            builder.append(handleData(splits[i]));
+            builder.append(")");
+            dataList.add(builder.toString());
+        }
+        return chartMapper.insertDataTable(chartId, dataList);
+    }
+
+    /**
+     * 处理每一行字符
+     * @param datas 2023/01/02,30  =>'2023/01/02','30'
+     * @return
+     */
+    private String handleData(String datas) {
+        String[] split = datas.split(",");
+        List<String> handledData = new ArrayList<>();
+        for (String s : split) {
+            StringBuilder builder = new StringBuilder("'");
+            builder.append(s);
+            builder.append("'");
+            handledData.add(builder.toString());
+        }
+        return StringUtils.join(handledData, ",");
+    }
+
+    public String getData(String data){
+        return data;
+    }
+
+
 }
 
 

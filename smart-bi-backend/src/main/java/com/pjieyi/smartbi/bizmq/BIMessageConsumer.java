@@ -43,7 +43,7 @@ public class BIMessageConsumer {
     // @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag是一个方法参数注解,用于从消息头中获取投递标签(deliveryTag),
     // 在RabbitMQ中,每条消息都会被分配一个唯一的投递标签，用于标识该消息在通道中的投递状态和顺序。通过使用@Header(AmqpHeaders.DELIVERY_TAG)注解,可以从消息头中提取出该投递标签,并将其赋值给long deliveryTag参数。
     public void receiveMessage(String message, Channel channel,@Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag){
-        // 使用日志记录器打印接收到的消息内容
+        // 使用日志记录器打印接收到的消息内容 队伍id
         log.info("receiveMessage message = {}", message);
         if (StringUtils.isEmpty(message)){
             // 拒绝当前消息

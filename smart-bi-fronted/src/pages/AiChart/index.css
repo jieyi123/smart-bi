@@ -1,0 +1,14 @@
+.reactMarkdown code {
+  background-color: #2a73bb; /* 浅灰色背景 */
+  border-radius: 5px;
+  padding: 5px;
+  font-family: monospace;
+}
+
+.reactMarkdown pre {
+  background-color: #282c34; /* 深色背景 */
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}

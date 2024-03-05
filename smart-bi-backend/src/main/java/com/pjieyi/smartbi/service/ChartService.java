@@ -41,4 +41,12 @@ public interface ChartService extends IService<Chart> {
      * @return
      */
     BiResponse genChartAsyncMq(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, User loginUser);
+
+
+    /**
+     * 转发压缩后的csv格式数据
+     * @param data
+     * @return
+     */
+    String getData(String data);
 }

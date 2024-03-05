@@ -89,6 +89,7 @@ const BaseView: React.FC = () => {
     </>
   );
 
+
   return (
     <div className={styles.baseView}>
       {loading ? null : (
