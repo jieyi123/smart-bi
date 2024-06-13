@@ -2,6 +2,25 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/smart_bi
-    username: root
-    password: 123456
+    url: jdbc:mysql://服务器地址:3306/smart_bi
+    username: pjieyi
+    password:
+  rabbitmq:
+    port: 5672
+    host: 服务器地址
+    username: pjieyi
+    password:
+  redis:
+    host: 服务器地址
+    password:
+    port: 6379
+    database: 0
+    timeout: 10000
+
+server:
+  servlet:
+    session:
+      cookie:
+        domain: originai.icu
+        same-site: lax
+        secure: false

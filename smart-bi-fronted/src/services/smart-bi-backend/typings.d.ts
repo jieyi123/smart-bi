@@ -1,3 +1,5 @@
+import {getChartByAiAnswerGet} from "@/services/smart-bi-backend/chartController";
+
 declare namespace API {
   type addUsingGETParams = {
     /** name */
@@ -24,7 +26,7 @@ declare namespace API {
 
   type BaseResponseChart = {
     code?: number;
-    data?: Chart;
+    data?: ChartVo;
     message?: string;
   };
 
@@ -43,6 +45,12 @@ declare namespace API {
   type BaseResponselong = {
     code?: number;
     data?: number;
+    message?: string;
+  };
+
+  type BaseResponseString = {
+    code?: number;
+    data?: string;
     message?: string;
   };
 
@@ -96,6 +104,23 @@ declare namespace API {
     status?: string;
     updateTime?: string;
     userId?: number;
+  };
+
+  type ChartVo = {
+    chartData?: string;
+    chartType?: string;
+    createTime?: string;
+    execMessage?: string;
+    genChart?: string;
+    genResult?: string;
+    goal?: string;
+    id?: string;
+    isDelete?: number;
+    name?: string;
+    status?: string;
+    updateTime?: string;
+    userId?: number;
+    userAccount?: string;
   };
 
   type ChartAddRequest = {
@@ -154,6 +179,10 @@ declare namespace API {
   type getChartByIdUsingGETParams = {
     /** id */
     id?: number;
+  };
+  type getChartByAiAnswerGetParams = {
+    /** answer */
+    question?: string;
   };
 
   type getChartUsingPOSTParams = {

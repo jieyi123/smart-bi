@@ -14,6 +14,8 @@ import com.pjieyi.smartbi.utils.AliyunOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -42,7 +47,7 @@ public class FileUploadController {
 
 
     @PostMapping("/upload")
-    public BaseResponse<String> upload(MultipartFile file) throws IOException {
+    public BaseResponse<String> upload(@RequestPart("file") MultipartFile file) throws IOException {
         //获取原始文件名
         String filename=file.getOriginalFilename();
         filename= UUID.randomUUID()+filename.substring(filename.lastIndexOf("."));
@@ -92,6 +97,37 @@ public class FileUploadController {
             //        log.error("file delete error, filepath = {}", filepath);
             //    }
             //}
+        }
+    }
+
+    /**
+     * 下载Excel文件
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/download")
+    public void getSdk(HttpServletResponse response) throws IOException {
+        // 获取要下载的文件
+        org.springframework.core.io.Resource resource = new ClassPathResource("test_excel.xlsx");
+        InputStream inputStream = resource.getInputStream();
+
+        // 设置响应头
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=test_excel.xlsx");
+
+        // 将文件内容写入响应
+        try (OutputStream out = response.getOutputStream()) {
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            out.flush();
+        } catch (IOException e) {
+            // 处理异常
+            e.printStackTrace();
+        } finally {
+            inputStream.close();
         }
     }
 

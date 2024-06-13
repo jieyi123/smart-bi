@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {Layout, Input, Button, List, Avatar, Spin, Card, Space} from 'antd';
+import {Layout, Input, Button, List, Avatar, Spin, Card, Space, message} from 'antd';
 import ReactMarkdown from "react-markdown";
 import {requestConfig} from "@/requestConfig";
 import './index.css'
+import {getChartByAiAnswerGet, getChartByIdUsingGet} from "@/services/smart-bi-backend/chartController";
 
 
 const { TextArea } = Input;
@@ -30,40 +31,58 @@ const ChatBox = () => {
     return text.replace(/\\n/g, '\n');
   };
 
-  const runPrompt = () => {
-    // console.log(answerText?answerText: "错误")
-    setAnswerText('');
-    charIndexRef.current = 0;
-    setText('');
-    const url=baseURL.substring(0,baseURL.lastIndexOf(':'))
-    fetch(url+':8000/eb_stream', {
-      method: 'post',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ prompt: currentMessage }),
-    })
-      .then((response) => response.body)
-      .then((body) => {
-        const reader = body.getReader();
-        const decoder = new TextDecoder();
-        const read = () =>
-          reader.read().then(({ done, value }) => {
-            if (done) return;
-            const data = decoder.decode(value, { stream: true });
-            const result = data.substring(
-              data.indexOf('"result":"') + 10,
-              data.indexOf('","', data.indexOf('"result":"') + 9),
-            );
-            setText((prevText) => prevText + formatText(result));
-            return read();
-          });
-        return read();
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+  // const runPrompt = () => {
+  //   // console.log(answerText?answerText: "错误")
+  //   setAnswerText('');
+  //   charIndexRef.current = 0;
+  //   setText('');
+  //   const url=baseURL.substring(0,baseURL.lastIndexOf(':'))
+  //   fetch(url+':8000/ai/eb_stream', {
+  //     method: 'post',
+  //     headers: { 'Content-Type': 'text/plain' },
+  //     body: JSON.stringify({ prompt: currentMessage }),
+  //   })
+  //     .then((response) => response.body)
+  //     .then((body) => {
+  //       const reader = body.getReader();
+  //       const decoder = new TextDecoder();
+  //       const read = () =>
+  //         reader.read().then(({ done, value }) => {
+  //           if (done) return;
+  //           const data = decoder.decode(value, { stream: true });
+  //           const result = data.substring(
+  //             data.indexOf('"result":"') + 10,
+  //             data.indexOf('","', data.indexOf('"result":"') + 9),
+  //           );
+  //           setText((prevText) => prevText + formatText(result));
+  //           return read();
+  //         });
+  //       return read();
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  // };
+
+
+  const runPrompt =  async ()=>{
+    setLoading(true);
+    try {
+      // 发起请求获取图表信息，接受一个包含 id 参数的对象作为参数
+      const res =  await getChartByAiAnswerGet({
+        question: currentMessage,
       });
-  };
-
-
+      // 将获取到的接口信息设置到 data 状态中
+      return res.data;
+    } catch (error: any) {
+      // 请求失败处理
+      message.error('请求失败，' + error.message);
+      return ''
+    }finally {
+      // 请求完成，设置 loading 状态为 false，表示请求结束，可以停止加载状态的显示
+      setLoading(false);
+    }
+  }
 
 
   const scrollToBottom = () => {
@@ -73,19 +92,16 @@ const ChatBox = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (currentMessage) {
       // @ts-ignore
       setMessages([...messages, { text: currentMessage,type: 'user', sender: 'user', avatar:  <Avatar  src={'avatar.jpg'} /> , username: 'You',time: new Date().toLocaleString() }]);
       setCurrentMessage('');
-      setLoading(true);
-      runPrompt();
+      const answer = await runPrompt();
       // setMessages(m => [...m, { text: answerText, sender: 'other', avatar: <Avatar icon={<UserOutlined />} />, username: 'Answer' }]);
-      setTimeout(() => {
-        // @ts-ignore
-        setMessages(m => [...m, { text: answerText, type: 'bot',sender: 'other', avatar: <Avatar src={'ChatGPT.ico'} />, username: 'Answer',time: new Date().toLocaleString() }]);
-        setLoading(false);
-      }, 2000);
+      //setMessages(m => [...m, { text: answer, type: 'bot',sender: 'other', avatar: <Avatar src={'ChatGPT.ico'} />, username: 'Answer',time: new Date().toLocaleString() }]);
+      const botMessage = { text: answer, type: 'bot', sender: 'other', avatar: <Avatar src={'ChatGPT.ico'} />, username: 'Answer', time: new Date().toLocaleString() };
+      setMessages(prevMessages => [...prevMessages, botMessage]);
     }
   };
 
@@ -112,18 +128,18 @@ const ChatBox = () => {
   //   }
   // };
 
-  useEffect(() => {
-    if (answerText) {
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        const lastMessageIndex = updatedMessages.length - 1;
-        if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].type === 'bot') {
-          updatedMessages[lastMessageIndex].text = answerText; // 更新AI回复的内容
-        }
-        return updatedMessages;
-      });
-    }
-  }, [answerText]);
+  // useEffect(() => {
+  //   if (answerText) {
+  //     setMessages((prevMessages) => {
+  //       const updatedMessages = [...prevMessages];
+  //       const lastMessageIndex = updatedMessages.length - 1;
+  //       if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].type === 'bot') {
+  //         updatedMessages[lastMessageIndex].text = answerText; // 更新AI回复的内容
+  //       }
+  //       return updatedMessages;
+  //     });
+  //   }
+  // }, [answerText]);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -132,20 +148,20 @@ const ChatBox = () => {
     }
   };
 
-  useEffect(() => {
-    const type = () => {
-      if (charIndexRef.current < text.length) {
-        setAnswerText(text.substring(0, charIndexRef.current) + (showCursorRef.current ? '|' : ''));
-        charIndexRef.current++;
-      } else {
-        setAnswerText(text);
-      }
-      showCursorRef.current = !showCursorRef.current;
-    };
-
-    const interval = setInterval(type, 1000 / 20);
-    return () => clearInterval(interval);
-  }, [text]);
+  // useEffect(() => {
+  //   const type = () => {
+  //     if (charIndexRef.current < text.length) {
+  //       setAnswerText(text.substring(0, charIndexRef.current) + (showCursorRef.current ? '|' : ''));
+  //       charIndexRef.current++;
+  //     } else {
+  //       setAnswerText(text);
+  //     }
+  //     showCursorRef.current = !showCursorRef.current;
+  //   };
+  //
+  //   const interval = setInterval(type, 1000 / 20);
+  //   return () => clearInterval(interval);
+  // }, [text]);
 
 
 

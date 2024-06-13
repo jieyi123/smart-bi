@@ -21,15 +21,15 @@ export default [
     icon: 'smile',
     component: './Welcome',
   },
-  {
-    path: '/add_chart',
-    name: '智能分析',
-    icon: 'barChart',
-    component: './AddChart'
-  },
+  // {
+  //   path: '/add_chart',
+  //   name: '智能分析',
+  //   icon: 'barChart',
+  //   component: './AddChart'
+  // },
   {
     path: '/add_chart_async',
-    name: '智能分析(异步)',
+    name: '智能分析',
     icon: 'barChart',
     component: './AddChartAsync'
   },
@@ -54,6 +54,7 @@ export default [
     routes: [
       { path: '/admin', redirect: '/admin/user-manager' },
       { path: '/admin/user-manager', icon: 'pieChart',name: '用户管理', component: './Admin/UserManager' },
+      { path: '/admin/chart-manager', icon: 'pieChart',name: '图表管理', component: './Admin/ChartManager' },
     ],
   },
   { name: '个人设置', icon: 'user', path: '/user-settings', component: './UserSettings' },

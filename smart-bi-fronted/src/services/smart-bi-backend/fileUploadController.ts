@@ -3,13 +3,15 @@
 import { request } from '@umijs/max';
 
 /** upload POST /api/upload */
-export async function uploadUsingPost(body: string, options?: { [key: string]: any }) {
+export async function uploadUsingPost(file: File, options?: { [key: string]: any }) {
+  const formData = new FormData();
+  formData.append('file', file);
   return request<API.BaseResponsestring>('/api/upload', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
+    data: formData,
     ...(options || {}),
   });
 }

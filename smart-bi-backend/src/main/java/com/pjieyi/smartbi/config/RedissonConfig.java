@@ -25,9 +25,11 @@ public class RedissonConfig {
     public RedissonClient redissonClient(){
         //1.创建配置对象
         Config config=new Config();
+        String address=String.format("redis://%s:%s",host,port);
         //添加单机Redisson配置
         config.useSingleServer()
-                .setAddress("redis://127.0.0.1:6379")
+                //.setPassword("pjieyi")
+                .setAddress(address)
                 .setDatabase(1);
         return Redisson.create(config);
     }

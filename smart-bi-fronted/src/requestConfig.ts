@@ -24,7 +24,9 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
+
   //基础调用地址
+  // baseURL:'http://smart-bi-backend.originai.icu',
   baseURL:'http://localhost:7529',
   //带上cookie,登录过后不用重新登录
   withCredentials: true,

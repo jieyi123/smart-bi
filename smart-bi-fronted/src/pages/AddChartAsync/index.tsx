@@ -4,6 +4,8 @@ import TextArea from 'antd/es/input/TextArea';
 import React, { useState } from 'react';
 import {useForm} from "antd/es/form/Form";
 import {getChartAsyncMqUsingPost} from "@/services/smart-bi-backend/chartController";
+import {Link} from "@@/exports";
+import {requestConfig} from "@/requestConfig";
 
 /**
  * 添加图表(异步)页面
@@ -51,9 +53,13 @@ const AddChartAsync: React.FC = () => {
     setSubmitting(false);
   };
 
+  const getSdk = () => {
+    window.location.href = requestConfig.baseURL + '/api/download';
+  };
+
   return (
     <div className="add-chart-async">
-      <Card title="智能分析">
+      <Card title="智能分析"  extra={<Button onClick={getSdk} >示例文件</Button>} >
         <Form
           form={form}
           name="addChart"
@@ -92,7 +98,7 @@ const AddChartAsync: React.FC = () => {
             label="原始数据"
           >
             <Upload name="file" maxCount={1}>
-              <Button icon={<UploadOutlined />}>上传 CSV 文件</Button>
+              <Button icon={<UploadOutlined />}>上传 Excel 文件</Button>
             </Upload>
           </Form.Item>
           <Form.Item wrapperCol={{ span: 16, offset: 4 }}>

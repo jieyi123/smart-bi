@@ -7,6 +7,7 @@ This project is initialized with [Ant Design Pro](https://pro.ant.design). Follo
 Install `node_modules`:
 
 ```bash
+v16.20.0
 npm install
 ```
 

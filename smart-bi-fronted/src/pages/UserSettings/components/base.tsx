@@ -40,8 +40,7 @@ const BaseView: React.FC = () => {
   const handleFileUpload = async ({ file }) => {
     try {
       // 创建 FormData 对象
-      const formData = new FormData();
-      formData.append('file', file);
+
       // 发送文件到后端
       const response = await uploadUsingPost(file);
 

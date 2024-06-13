@@ -17,7 +17,7 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: '智能BI平台',
   pwa: true,
-  logo: 'https://pjieyi.oss-cn-chengdu.aliyuncs.com/BI/ArtStation.ico',
+  logo: 'http://aliyunoss.originai.icu/BI/ArtStation.ico',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

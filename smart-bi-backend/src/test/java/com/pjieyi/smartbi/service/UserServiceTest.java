@@ -2,12 +2,16 @@ package com.pjieyi.smartbi.service;
 
 import com.pjieyi.smartbi.exception.BusinessException;
 import com.pjieyi.smartbi.model.entity.User;
+import com.pjieyi.smartbi.utils.AliyunOssUtil;
 import com.pjieyi.smartbi.utils.SMSUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * 用户服务测试
@@ -69,5 +73,19 @@ class UserServiceTest {
         smsUtils.sendMessage("originai","SMS_464995252","","888888");
     }
 
+    @Resource
+    private AliyunOssUtil aliyunOssUtil;
+
+    @Test
+    void testOss(){
+        String filePath= "C:\\Users\\pjy17\\Pictures\\Screenshots\\屏幕截图 2023-06-02 111203.png";
+        File file=new File(filePath);
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            aliyunOssUtil.upload(filePath,inputStream);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

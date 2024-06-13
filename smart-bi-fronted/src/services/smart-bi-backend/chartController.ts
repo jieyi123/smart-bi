@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from '@umijs/max';
+import {BaseResponseString, getChartByAiAnswerGetParams} from "@/services/smart-bi-backend/typings";
 
 /** addChart POST /api/chart/add */
 export async function addChartUsingPost(
@@ -170,6 +171,21 @@ export async function getChartByIdUsingGet(
   });
 }
 
+/** getChartById GET /api/chart/getAiAnswer */
+export async function getChartByAiAnswerGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getChartByAiAnswerGetParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseString>('/api/chart/getAiAnswer', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** listChart POST /api/chart/list */
 export async function listChartUsingPost(
   body: API.ChartQueryRequest,
@@ -199,6 +215,23 @@ export async function listChartByPageUsingPost(
     ...(options || {}),
   });
 }
+
+
+/** listChartByPage POST /api/chart/list/page */
+export async function adminListChartByPageUsingPost(
+  body: API.ChartQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageChart>('/api/chart/admin/list/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 
 /** updateChart POST /api/chart/update */
 export async function updateChartUsingPost(

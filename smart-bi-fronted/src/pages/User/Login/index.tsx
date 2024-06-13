@@ -172,13 +172,14 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
-                placeholder={'用户名:'}
+                placeholder={'用户名: user'}
                 rules={[
                   {
                     required: true,
                     message: '用户名是必填项！',
                   },
                 ]}
+
               />
               <ProFormText.Password
                 name="userPassword"
@@ -186,7 +187,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
-                placeholder={'密码:'}
+                placeholder={'密码: 12345678'}
                 rules={[
                   {
                     required: true,

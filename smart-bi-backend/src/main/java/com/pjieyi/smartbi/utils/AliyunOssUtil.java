@@ -24,14 +24,14 @@ public class AliyunOssUtil {
     @Value("${aliyun.oss.accessKeyId}")
     private  String accessKeyId;
     // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
-    private  String endpoint = "https://oss-cn-chengdu.aliyuncs.com";
+    private  String endpoint = "http://oss-cn-chengdu.aliyuncs.com";
     // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
     // 填写Bucket名称，例如examplebucket。
     @Value("${aliyun.oss.bucketName}")
     private  String bucketName;
     // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
     //OSS中存储的位置
-    private  String objectName = "BI";
+    private  String objectName = "BI/";
     // 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt
     // 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
     private  String filePath= "C:\\Users\\pjy17\\Pictures\\Screenshots\\屏幕截图 2023-06-02 111203.png";
@@ -51,7 +51,8 @@ public class AliyunOssUtil {
             // putObjectRequest.setMetadata(metadata);
             // 上传文件
             PutObjectResult result = ossClient.putObject(putObjectRequest);
-            url="https://"+bucketName+"."+endpoint.substring(endpoint.lastIndexOf("/")+1)+"/"+objectName+fileName;
+           // url="https://https://aliyunoss.originai.icu"+"."+endpoint.substring(endpoint.lastIndexOf("/")+1)+"/"+objectName+fileName;
+            url="http://aliyunoss.originai.icu"+"/"+objectName+fileName;
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");

@@ -15,7 +15,14 @@ public class BIInitMain {
         try {
             // 创建连接工厂
             ConnectionFactory factory = new ConnectionFactory();
+            //本地
             factory.setHost("localhost");
+
+
+            //远程地址
+            //factory.setHost("47.102.208.247");
+            //factory.setUsername("pjieyi");
+            //factory.setPassword("pjy2001518..");
             // 创建连接
             Connection connection = factory.newConnection();
             // 创建通道

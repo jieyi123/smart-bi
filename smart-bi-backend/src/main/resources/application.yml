@@ -52,8 +52,9 @@ aliyun:
   captcha:
     captchaId:
     captchaKey:
-    domain:
+    domain: https://captcha.alicaptcha.com
 
+# https://www.yucongming.com/dev
 yuapi:
   client:
     access-key:

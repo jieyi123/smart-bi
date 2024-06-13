@@ -17,8 +17,10 @@ import com.pjieyi.smartbi.model.dto.chart.GenChartByAiRequest;
 import com.pjieyi.smartbi.model.entity.Chart;
 import com.pjieyi.smartbi.model.entity.User;
 import com.pjieyi.smartbi.model.vo.BiResponse;
+import com.pjieyi.smartbi.model.vo.ChartVo;
 import com.pjieyi.smartbi.service.ChartService;
 import com.pjieyi.smartbi.service.UserService;
+import com.pjieyi.smartbi.utils.BigModelNew;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -112,13 +114,33 @@ public class ChartController {
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<Chart> getChartById(long id, HttpServletRequest request) {
+    public BaseResponse<ChartVo> getChartById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        ChartVo chartVo=new ChartVo();
         Chart chart = chartService.getById(id);
-        return ResultUtils.success(chart);
+        User user = userService.getById(chart.getUserId());
+        BeanUtils.copyProperties(chart,chartVo);
+        chartVo.setUserAccount(user.getUserAccount());
+        return ResultUtils.success(chartVo);
     }
+
+    @PostMapping("/admin/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<Chart>> adminListChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        String name = chartQueryRequest.getName();
+        LambdaQueryWrapper<Chart> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(name),Chart::getName,name);
+        queryWrapper.orderByDesc(Chart::getUpdateTime);
+        Page<Chart> chartPage = chartService.page(new Page<>(chartQueryRequest.getCurrent(), chartQueryRequest.getPageSize()), queryWrapper);
+        return ResultUtils.success(chartPage);
+    }
+
 
     /**
      * 获取图表信息列表
@@ -156,7 +178,6 @@ public class ChartController {
         if (loginUser==null){
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-
         String name = chartQueryRequest.getName();
         LambdaQueryWrapper<Chart> queryWrapper=new LambdaQueryWrapper<>();
         queryWrapper.eq(Chart::getUserId,loginUser.getId());
@@ -235,6 +256,15 @@ public class ChartController {
         return ResultUtils.success(result);
     }
 
+    @GetMapping("/getAiAnswer")
+    public BaseResponse<String> getAiAnswer(String question){
+        try {
+            String result = BigModelNew.fetchAnswer(question);
+            return ResultUtils.success(result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 
